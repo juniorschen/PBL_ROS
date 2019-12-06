@@ -1,0 +1,43 @@
+  #SUBSCRIBER
+#!/usr/bin/env python3
+
+import rospy
+import RPi.GPIO as GPIO
+from adafruit_servokit import ServoKit
+import sys, tty, termios
+from std_msgs.msg import *
+
+def callback(data):
+    kit.servo[0].angle = data.data
+def random_subscriber():
+    rospy.init_node('msub')
+    rospy.Subscriber('mpub',Int32, callback)
+    rospy.spin()
+
+if __name__=='__main__':
+    random_subscriber()
+    
+    #PUBLISHER
+#!/usr/bin/env python
+import rospy
+
+from std_msgs.msg import Int32
+import random
+
+angules = [0, 15, 30, 45, 60, 90]
+
+def random_angule_publisher():
+    rospy.init_node('random_angule')
+    pub=rospy.Publisher('mpub', Int32, queue_size=10)
+    rate= rospy.Rate(2)
+    while not rospy.is_shutdown():
+        random_msg=random.choice(angules)
+        rospy.loginfo(random_msg)
+        pub.publish(random_msg)
+        rate.sleep()
+
+if __name__=='__main__':
+    try:
+        random_angule_publisher()
+    except rospy.ROSInterruptException:
+        pass
